@@ -48,6 +48,10 @@ public class MainUI extends javax.swing.JFrame {
         btnShowPersons = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablePersons = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        textId = new javax.swing.JTextField();
+        btnSearchPerson = new javax.swing.JButton();
+        labelResult = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -71,6 +75,17 @@ public class MainUI extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(tablePersons);
 
+        jLabel1.setText("Anna henkilön id");
+
+        btnSearchPerson.setText("Etsi");
+        btnSearchPerson.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchPersonActionPerformed(evt);
+            }
+        });
+
+        labelResult.setText("jLabel2");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -82,8 +97,18 @@ public class MainUI extends javax.swing.JFrame {
                         .addComponent(btnShowPersons, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(304, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(textId, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34)
+                        .addComponent(btnSearchPerson, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addComponent(labelResult, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(223, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -91,43 +116,68 @@ public class MainUI extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addComponent(btnShowPersons)
                 .addGap(31, 31, 31)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(88, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(textId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearchPerson))
+                .addGap(35, 35, 35)
+                .addComponent(labelResult)
+                .addContainerGap(110, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnShowPersonsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowPersonsActionPerformed
-        HttpGet request = new HttpGet(Environment.getBaseUrl()+"/person");
-
+        HttpGet request = new HttpGet(Environment.getBaseUrl() + "/person");
+        
         try (CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(request)) {
-
+            
             HttpEntity entity = response.getEntity();
-
+            
             if (entity != null) {
                 String result = EntityUtils.toString(entity);
                 JSONArray jsonArray = new JSONArray(result);
 
                 //Kaksiulotteinen taulukko, jossa rivien määrä datan mukaan ja sarakkeita 2 (fname, lname)
                 String[][] data = new String[jsonArray.length()][2];
-
+                
                 for (int row = 0; row < jsonArray.length(); row++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(row);
-
+                    
                     data[row][0] = jsonObject.get("fname").toString();
                     data[row][1] = jsonObject.get("lname").toString();
-
+                    
                 }
                 String[] columnNames = {"Etunimi", "Sukunimi"};
                 DefaultTableModel model = new DefaultTableModel(data, columnNames);
                 tablePersons.setModel(model);
             }
-
+            
         } catch (IOException ex) {
             Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnShowPersonsActionPerformed
+
+    private void btnSearchPersonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchPersonActionPerformed
+        HttpGet request = new HttpGet(Environment.getBaseUrl() + "/person/"+textId.getText());
+        try (CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(request)) {
+            
+            HttpEntity entity = response.getEntity();
+            
+            if (entity != null) {
+                String result = EntityUtils.toString(entity);
+                JSONObject jsonObj = new JSONObject(result);
+                String fn = jsonObj.get("fname").toString();
+                labelResult.setText(fn);
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnSearchPersonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -165,8 +215,12 @@ public class MainUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSearchPerson;
     private javax.swing.JButton btnShowPersons;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel labelResult;
     private javax.swing.JTable tablePersons;
+    private javax.swing.JTextField textId;
     // End of variables declaration//GEN-END:variables
 }

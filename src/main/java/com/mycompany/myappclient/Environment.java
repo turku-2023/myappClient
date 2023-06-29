@@ -10,7 +10,7 @@ package com.mycompany.myappclient;
  */
 public class Environment {
     public static String getBaseUrl(){
-        //return "http://localhost:8080";
-       return "https://myapp-anzv.onrender.com";
+        return "http://localhost:8080";
+       //return "https://myapp-anzv.onrender.com";
     }
 }
