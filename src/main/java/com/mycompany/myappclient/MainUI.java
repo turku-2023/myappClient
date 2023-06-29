@@ -16,6 +16,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -225,7 +226,7 @@ public class MainUI extends javax.swing.JFrame {
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         try {
-            String result = sendPOST(Environment.getBaseUrl()+ "/person/" + textId.getText());
+            String result = sendPOST(Environment.getBaseUrl()+ "/person/"+textId.getText());
             labelResult.setText(result);
         } catch (IOException e) {
             e.printStackTrace();
@@ -236,14 +237,14 @@ public class MainUI extends javax.swing.JFrame {
         String result = "";
         //private String newFname= textFname.getText();
         //pricate String newLname=textLname.getText();
-        HttpPost post = new HttpPost(url);
+        HttpPut post = new HttpPut(url);
         
         List<NameValuePair> urlParameters = new ArrayList<>();
         
-        //urlParameters.add(new BasicNameValuePair("fname", "newFname"));
-        //urlParameters.add(new BasicNameValuePair("lname", "newLname"));
+        urlParameters.add(new BasicNameValuePair("fname", "newFname"));
+        urlParameters.add(new BasicNameValuePair("lname", "newLname"));
 
-        //post.setEntity(new UrlEncodedFormEntity(urlParameters));
+        post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post)) {
             result = EntityUtils.toString(response.getEntity());
