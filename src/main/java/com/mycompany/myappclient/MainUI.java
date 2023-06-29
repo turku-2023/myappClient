@@ -33,6 +33,8 @@ public class MainUI extends javax.swing.JFrame {
     /**
      * Creates new form MainUI
      */
+            private String fname;
+            private String lname;
     public MainUI() {
         initComponents();
     }
@@ -225,24 +227,24 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSearchPersonActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        fname=textFname.getText();
+        lname=textLname.getText();
         try {
-            String result = sendPOST(Environment.getBaseUrl()+ "/person/"+textId.getText());
+            String result = sendPUT(Environment.getBaseUrl()+ "/person/"+textId.getText());
             labelResult.setText(result);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
-    private static String sendPOST(String url) throws IOException {
+    private  String sendPUT(String url) throws IOException {
 
         String result = "";
-        //private String newFname= textFname.getText();
-        //pricate String newLname=textLname.getText();
         HttpPut post = new HttpPut(url);
         
         List<NameValuePair> urlParameters = new ArrayList<>();
         
-        urlParameters.add(new BasicNameValuePair("fname", "newFname"));
-        urlParameters.add(new BasicNameValuePair("lname", "newLname"));
+        urlParameters.add(new BasicNameValuePair("fname",fname));
+        urlParameters.add(new BasicNameValuePair("lname", lname));
 
         post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
