@@ -263,16 +263,16 @@ public class MainUI extends javax.swing.JFrame {
     private String sendPUT(String url) throws IOException {
 
         String result = "";
-        HttpPut post = new HttpPut(url);
+        HttpPut put = new HttpPut(url);
 
         List<NameValuePair> urlParameters = new ArrayList<>();
 
         urlParameters.add(new BasicNameValuePair("fname", fname));
         urlParameters.add(new BasicNameValuePair("lname", lname));
 
-        post.setEntity(new UrlEncodedFormEntity(urlParameters));
+        put.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post)) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(put)) {
             result = EntityUtils.toString(response.getEntity());
         }
 
