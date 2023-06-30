@@ -12,5 +12,6 @@ public class Environment {
     public static String getBaseUrl(){
         return "http://localhost:8080";
        //return "https://myapp-anzv.onrender.com";
+       //return "http://ipv4.fiddler.fi:8080";
     }
 }

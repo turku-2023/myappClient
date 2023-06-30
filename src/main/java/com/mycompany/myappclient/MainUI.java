@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static javax.swing.UIManager.put;
 import javax.swing.table.DefaultTableModel;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -33,8 +34,9 @@ public class MainUI extends javax.swing.JFrame {
     /**
      * Creates new form MainUI
      */
-            private String fname;
-            private String lname;
+    private String fname;
+    private String lname;
+
     public MainUI() {
         initComponents();
     }
@@ -60,6 +62,7 @@ public class MainUI extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         btnUpdate = new javax.swing.JButton();
+        btnAdd = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -105,6 +108,13 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
+        btnAdd.setText("Lisää henkilö");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -143,8 +153,10 @@ public class MainUI extends javax.swing.JFrame {
                                         .addComponent(btnSearchPerson, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(textFname)
-                                        .addGap(164, 164, 164)))))))
-                .addContainerGap(226, Short.MAX_VALUE))
+                                        .addGap(164, 164, 164)))
+                                .addGap(26, 26, 26)
+                                .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(70, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -166,7 +178,8 @@ public class MainUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textLname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
-                    .addComponent(btnUpdate))
+                    .addComponent(btnUpdate)
+                    .addComponent(btnAdd))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addComponent(labelResult)
                 .addGap(44, 44, 44))
@@ -227,23 +240,52 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSearchPersonActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        fname=textFname.getText();
-        lname=textLname.getText();
+        fname = textFname.getText();
+        lname = textLname.getText();
         try {
-            String result = sendPUT(Environment.getBaseUrl()+ "/person/"+textId.getText());
+            String result = sendPUT(Environment.getBaseUrl() + "/person/" + textId.getText());
             labelResult.setText(result);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
-    private  String sendPUT(String url) throws IOException {
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        fname = textFname.getText();
+        lname = textLname.getText();
+        try {
+            String result = sendPOST(Environment.getBaseUrl() + "/person");
+            labelResult.setText(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnAddActionPerformed
+    private String sendPUT(String url) throws IOException {
 
         String result = "";
         HttpPut post = new HttpPut(url);
-        
+
         List<NameValuePair> urlParameters = new ArrayList<>();
-        
-        urlParameters.add(new BasicNameValuePair("fname",fname));
+
+        urlParameters.add(new BasicNameValuePair("fname", fname));
+        urlParameters.add(new BasicNameValuePair("lname", lname));
+
+        post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post)) {
+            result = EntityUtils.toString(response.getEntity());
+        }
+
+        return result;
+    }
+        private String sendPOST(String url) throws IOException {
+
+        String result = "";
+        HttpPost post = new HttpPost(url);
+
+        List<NameValuePair> urlParameters = new ArrayList<>();
+
+        urlParameters.add(new BasicNameValuePair("fname", fname));
         urlParameters.add(new BasicNameValuePair("lname", lname));
 
         post.setEntity(new UrlEncodedFormEntity(urlParameters));
@@ -291,6 +333,7 @@ public class MainUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnSearchPerson;
     private javax.swing.JButton btnShowPersons;
     private javax.swing.JButton btnUpdate;
